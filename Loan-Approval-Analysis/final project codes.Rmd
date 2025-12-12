@@ -1,0 +1,265 @@
+---
+title: "final r works"
+author: "Amani"
+date: "2024-09-21"
+output: html_document
+---
+
+
+
+
+
+```{r}
+# Load the dataset
+data <- read.csv("C:\\Users\\fathi\\OneDrive\\Desktop\\final\\loan_train.csv")
+
+# Check the structure and summary of the data
+str(data)
+summary(data)
+```
+
+
+```{r}
+# Function to remove outliers based on IQR
+remove_outliers <- function(data, column) {
+  Q1 <- quantile(data[[column]], 0.25, na.rm = TRUE)
+  Q3 <- quantile(data[[column]], 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  
+  lower_bound <- Q1 - 1.5 * IQR
+  upper_bound <- Q3 + 1.5 * IQR
+  
+  data_clean <- data[data[[column]] >= lower_bound & data[[column]] <= upper_bound, ]
+  return(data_clean)
+}
+
+# Remove outliers for Applicant_Income, Coapplicant_Income, and Loan_Amount
+data_clean <- remove_outliers(data, "Applicant_Income")
+data_clean <- remove_outliers(data_clean, "Coapplicant_Income")
+data_clean <- remove_outliers(data_clean, "Loan_Amount")
+data_clean <- remove_outliers(data_clean, "Term")
+```
+
+
+```{r}
+str(data)
+```
+
+```{r}
+data$Gender <- as.factor(data$Gender)
+```
+
+```{r}
+data$Married <- as.factor(data$Married)
+```
+
+```{r}
+data$Dependents <- as.factor(data$Dependents)
+```
+
+```{r}
+data$Education <- as.factor(data$Education)
+```
+
+```{r}
+data$Self_Employed <- as.factor(data$Self_Employed)
+```
+
+```{r}
+data$Area <- as.factor(data$Area)
+```
+
+```{r}
+data$Status <- as.factor(data$Status)
+```
+
+```{r}
+data$Applicant_Income <- as.numeric(data$Applicant_Income)
+```
+
+```{r}
+data$Loan_Amount <- as.numeric(data$Loan_Amount)
+```
+
+```{r}
+data$Term <- as.numeric(data$Term)
+```
+
+```{r}
+data$Credit_History <- as.numeric(data$Credit_History)
+```
+
+```{r}
+str(data)
+```
+
+```{r}
+# Check for missing values in the dataset
+colSums(is.na(data))
+```
+
+```{r}
+# Remove rows where either "CreditHistory" or "Term" has missing values
+data_clean <- data[!is.na(data$CreditHistory) & !is.na(data$Term), ]
+
+# Check the cleaned data
+summary(data_clean)
+```
+
+
+```{r}
+# Check for missing values in the dataset
+colSums(is.na(data_clean))
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+data %>%
+  count(Gender) %>%
+  ggplot(aes(x = "", y = n, fill = Gender)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar(theta = "y") +
+  labs(title = "Pie Chart of Gender", x = "", y = "")
+
+```
+
+
+```{r}
+# Bar Plot for Education
+ggplot(data, aes(x = Education)) +
+  geom_bar(fill = "coral") +
+  labs(title = "Bar Plot: Education Distribution", x = "Education", y = "Count")
+
+```
+
+```{r}
+# Stacked Bar Plot for Area vs Loan Status
+ggplot(data, aes(x = Area, fill = Status)) +
+  geom_bar(position = "stack") +
+  labs(title = "Stacked Bar Plot: Area vs Status", x = "Area", y = "Count")
+```
+
+```{r}
+# Pie Chart for Self-Employed
+self_employed_data <- data %>%
+  count(Self_Employed) %>%
+  mutate(perc = n / sum(n) * 100)
+
+# Create the pie chart
+ggplot(self_employed_data, aes(x = "", y = perc, fill = Self_Employed)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Pie Chart: Self-Employed Distribution", y = "") +
+  theme_void()
+
+```
+
+```{r}
+# Bar Plot for married
+ggplot(data, aes(x = Married)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Bar Plot: Married Distribution", x = "Married", y = "Count")
+
+```
+
+```{r}
+# Histogram for ApplicantIncome
+ggplot(data, aes(x = Applicant_Income)) +
+  geom_histogram(fill = "steelblue", bins = 30) +
+  labs(title = "Histogram: Applicant Income", x = "Applicant_Income", y = "Frequency")
+```
+
+```{r}
+# Box Plot for LoanAmount
+ggplot(data, aes(y = Loan_Amount)) +
+  geom_boxplot(fill = "lightgreen") +
+  labs(title = "Box Plot: Loan Amount", y = "Loan_Amount")
+```
+
+```{r}
+# Bar Plot for Credit History
+ggplot(data, aes(x = as.factor(Credit_History))) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Bar Plot: Credit History", x = "Credit History", y = "Count") +
+  scale_x_discrete(labels = c("0" = "Bad", "1" = "Good"))
+```
+
+```{r}
+# Box Plot for Loan Amount by Term
+ggplot(data, aes(x = as.factor(Term), y = Loan_Amount)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Box Plot: Loan Amount by Loan Term", x = "Term", y = "Loan_Amount")
+
+```
+
+```{r}
+# Histogram for CoapplicantIncome
+ggplot(data, aes(x = Coapplicant_Income)) +
+  geom_histogram(fill = "skyblue", bins = 30) +
+  labs(title = "Histogram: Coapplicant Income", x = "Coapplicant_Income", y = "Frequency")
+```
+
+```{r}
+# Fit the multiple linear regression model
+model <- lm(Loan_Amount ~ Applicant_Income + Coapplicant_Income + Term + Dependents, data = data)
+
+# Display the summary of the regression model
+summary(model)
+
+```
+
+```{r}
+#INTERPRETATION FOR MULTIPLE LINEAR REGRESSION
+
+#The F-statistic (113.1) and its p-value (< 2.2e-16) indicate that the model as a whole is statistically significant, meaning at least one of the predictors significantly contributes to explaining the variability in loan amounts.
+```
+
+```{r}
+# Perform ANOVA: Loan Amount vs Education Level
+anova_model <- aov(Loan_Amount ~ Education, data = data)
+
+# Summary of the ANOVA test
+summary(anova_model)
+
+```
+
+```{r}
+#INTERPRETATION OF ANOVA TEST
+
+#The strong F value and very low p-value indicate that we can confidently conclude there is a difference in the dependent variable based on education levels.
+```
+
+```{r}
+# Create a contingency table of Credit History and Loan Approval Status
+credit_status_table <- table(data$Credit_History, data$Status)
+
+# View the contingency table
+credit_status_table
+```
+
+```{r}
+# Perform the Chi-Squared test
+chi_squared_test <- chisq.test(credit_status_table)
+
+# Display the test result
+chi_squared_test
+```
+
+```{r}
+#INTERPRETATION FOR CHI-SQURED TEST
+
+#Since the p-value is far below common thresholds (like 0.05), we can confidently conclude that there is a significant relationship between these two variables.
+```
+
+```{r}
+# Descriptive statistics for all numerical variables
+summary(data[, sapply(data, is.numeric)])
+
+```
+
+```{r}
+
+```
+

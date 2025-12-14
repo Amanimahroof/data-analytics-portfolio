@@ -1,4 +1,4 @@
-## Loan Approval Data Analysis – Final Project ##
+## Loan Approval Data Analysis – R Project ##
 
 This repository contains the data analysis work performed on a loan approval dataset using R and R Markdown.
 The objective of this project was to clean the dataset, explore patterns, and conduct statistical tests to understand which factors may influence loan-related outcomes.

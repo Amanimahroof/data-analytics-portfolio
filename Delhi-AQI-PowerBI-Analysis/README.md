@@ -1,4 +1,4 @@
-# Delhi Air Quality Index (AQI) Analysis (2020–2024)
+# Delhi Air Quality Index (AQI) Analysis (2020–2024) using POWER BI
 
 ## Project Overview
 This Power BI project analyzes Delhi’s Air Quality Index (AQI) data from 2020 to 2024 to understand pollution severity, seasonal patterns, and the impact of PM2.5 on overall air quality. The dashboard provides interactive visual insights for environmental and public health analysis.
